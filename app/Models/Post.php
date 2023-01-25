@@ -13,7 +13,6 @@ class Post extends Model
         'title',
         'text',
         'image',
-        'tag'
     ];
 
     public function user()
