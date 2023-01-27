@@ -15,26 +15,8 @@ class PostController extends Controller
      */
     public function index()
     {
-
-
-        // $tags = ['IT', 'Humor', 'Science'];
-        // foreach ($tags as $tag) {
-        //     Tag::create([
-        //         'tag_text'  =>  $tag,
-        //     ]);
-        // }
-
-        // $posts = Post::create([
-        //     'title'  =>  'Home Brixton Faux Leather Armchair',
-        //     'text' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        //                Aspernatur adipisci aut ad, tenetur deleniti animi saepe
-        //                nostrum voluptatem distinctio neque accusantium pariatur
-        //                vero doloribus at praesentium quasi ex porro! Corrupti.',
-        //     'image' => '111'
-        // ]);
-
-        // $posts = Post::all();
-        return response()->json('index');
+        $posts = Post::all();
+        return response()->json($posts);
     }
 
     /**

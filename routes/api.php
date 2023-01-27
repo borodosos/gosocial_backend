@@ -15,8 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::resource('post', PostController::class);
+Route::get('posts', [PostController::class, 'index']);
