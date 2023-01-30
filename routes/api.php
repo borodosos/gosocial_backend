@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('posts', [PostController::class, 'index']);
+
+// === Auth ===
+Route::post('registration', [AuthController::class, 'registration']);
