@@ -58,15 +58,16 @@ class AuthController extends Controller
                 'client_secret' => config('passport.password_grant_client.secret'),
                 'username' => request('email'),
                 'password' => request('password'),
-                'scope' => ''
+                'scope' => '',
+                'value' => '123'
             ]);
 
+
             $res = app()->handle($req);
-            $responseBody = json_decode($res->getContent());
+            $responseBody =  json_decode($res->getContent());
 
-
-            $cookie = cookie('refreshToken', $responseBody->refresh_token, 1440);
-            return response()->json(['token_data' => $responseBody, "user_data" => $user], $res->getStatusCode())->cookie($cookie);
+            // $cookie = cookie('refreshToken', $responseBody['refresh_token'], 1440);
+            return response()->json($responseBody, $res->getStatusCode());
         } else {
             return response()->json(['error' => 'Incorrect password or email'], 401);
         }

@@ -25,7 +25,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
+        Passport::tokensCan([
+            '2fa-pass' => '2FA Pass',
+            '2fa-not-pass' => '2FA Pass',
+        ]);
         Passport::tokensExpireIn(now()->addHour(1));
         Passport::refreshTokensExpireIn(now()->addDays(1));
     }
