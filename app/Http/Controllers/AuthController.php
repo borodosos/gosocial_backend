@@ -51,7 +51,6 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-            $user = Auth::user();
             $req = Request::create('/oauth/token', 'POST', [
                 'grant_type' => 'password',
                 'client_id' => config('passport.password_grant_client.id'),
@@ -59,15 +58,14 @@ class AuthController extends Controller
                 'username' => request('email'),
                 'password' => request('password'),
                 'scope' => '',
-                'value' => '123'
             ]);
 
 
             $res = app()->handle($req);
             $responseBody =  json_decode($res->getContent());
 
-            // $cookie = cookie('refreshToken', $responseBody['refresh_token'], 1440);
-            return response()->json($responseBody, $res->getStatusCode());
+            $cookie = cookie('refreshToken', $responseBody->refresh_token, 1440);
+            return response()->json($responseBody, $res->getStatusCode())->cookie($cookie);
         } else {
             return response()->json(['error' => 'Incorrect password or email'], 401);
         }
