@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -34,15 +35,54 @@ class AuthController extends Controller
 
         $req = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'password',
-            'client_id' => env('CLIENT_ID'),
-            'client_secret' => env('GRANT_PASSWORD'),
+            'client_id' => config('passport.password_grant_client.id'),
+            'client_secret' => config('passport.password_grant_client.secret'),
             'username' => request('email'),
             'password' => request('password'),
             'scope' => ''
         ]);
 
         $res = app()->handle($req);
-        $responseBody = json_decode($res->getContent()); // convert to json object
+        $responseBody = json_decode($res->getContent());
+
+        return response()->json($responseBody, $res->getStatusCode());
+    }
+
+    public function login()
+    {
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+            $req = Request::create('/oauth/token', 'POST', [
+                'grant_type' => 'password',
+                'client_id' => config('passport.password_grant_client.id'),
+                'client_secret' => config('passport.password_grant_client.secret'),
+                'username' => request('email'),
+                'password' => request('password'),
+                'scope' => ''
+            ]);
+
+            $res = app()->handle($req);
+            $responseBody = json_decode($res->getContent());
+
+
+            return response()->json($responseBody, $res->getStatusCode());
+        } else {
+            return response()->json(['error' => 'Incorrect password or email'], 401);
+        }
+    }
+
+    public function refresh()
+    {
+        $req = Request::create('/oauth/token', 'POST', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => request('refreshToken'),
+            'client_id' => config('passport.password_grant_client.id'),
+            'client_secret' => config('passport.password_grant_client.secret'),
+            'scope' => ''
+        ]);
+
+        $res = app()->handle($req);
+        $responseBody = json_decode($res->getContent());
+
 
         return response()->json($responseBody, $res->getStatusCode());
     }
