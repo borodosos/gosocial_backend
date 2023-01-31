@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -50,8 +51,10 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
-        return response()->json('show');
+
+        print('show');
+        $posts = Auth::guard('api')->user()->posts;
+        return response()->json($posts);
     }
 
     /**
