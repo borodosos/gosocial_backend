@@ -25,6 +25,10 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return response()->json($user->posts);
+        $posts = $user->posts;
+        foreach ($posts as $post) {
+            $post->tags;
+        };
+        return response()->json($user);
     }
 }
