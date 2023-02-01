@@ -11,7 +11,7 @@ class CustomClaim
     {
         $user = Auth::user();
 
-        $token->addClaim('my-claimsssss', $user);
+        $token->addClaim('user_info', $user);
         return $next($token);
     }
 }

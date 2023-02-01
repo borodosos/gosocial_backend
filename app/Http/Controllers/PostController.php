@@ -6,7 +6,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Bridge\AccessToken;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -18,6 +18,9 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
+        foreach ($posts as $post) {
+            $post['tags'] = $post->tags;
+        };
         return response()->json($posts);
     }
 
@@ -28,8 +31,6 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
-        return response()->json('create');
     }
 
     /**
@@ -40,8 +41,34 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        return response()->json('store');
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'text' => 'required',
+            'image' => 'required',
+            'tags' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->getMessageBag(), 400);;
+        }
+
+        $user = Auth::guard('api')->user();
+
+        $post = Post::create([
+            'title' => $request->title,
+            'text' => $request->text,
+            'image' => $request->image,
+            'user_id' => $user->id
+        ]);
+
+        $tagsId = [];
+        $textTags = explode(',', $request->tags);
+        foreach ($textTags as $text) {
+            $tagsId[] = Tag::where('tag_text', $text)->get()->value('id');
+        }
+        $tags = Tag::find($tagsId);
+        $post->tags()->attach($tags);
+
+        return response()->json($post);
     }
 
     /**

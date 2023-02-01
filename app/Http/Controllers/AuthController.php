@@ -67,7 +67,7 @@ class AuthController extends Controller
             $cookie = cookie('refreshToken', $responseBody->refresh_token, 1440);
             return response()->json($responseBody, $res->getStatusCode())->cookie($cookie);
         } else {
-            return response()->json(['error' => 'Incorrect password or email'], 401);
+            return response()->json(['error' => 'Incorrect password or email'], 400);
         }
     }
 
