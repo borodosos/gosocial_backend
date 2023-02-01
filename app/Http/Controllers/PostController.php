@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +21,7 @@ class PostController extends Controller
         $posts = Post::all();
         foreach ($posts as $post) {
             $post['tags'] = $post->tags;
+            $post->user;
         };
         return response()->json($posts);
     }
@@ -80,8 +82,11 @@ class PostController extends Controller
     public function show($id)
     {
 
-        print('show');
-        $posts = Auth::guard('api')->user()->posts;
+        $posts = Post::where('user_id', $id)->get();
+        foreach ($posts as $post) {
+            $post['tags'] = $post->tags;
+            $post->user;
+        };
         return response()->json($posts);
     }
 
