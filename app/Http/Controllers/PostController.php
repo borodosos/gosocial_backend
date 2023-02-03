@@ -18,11 +18,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
-        foreach ($posts as $post) {
-            $post['tags'] = $post->tags;
-            $post->user;
-        };
+
+        $posts = Post::with('tags')->with('user')->get();
         return response()->json($posts);
     }
 
@@ -62,15 +59,10 @@ class PostController extends Controller
             'user_id' => $user->id
         ]);
 
-        $tagsId = [];
-        $textTags = explode(',', $request->tags);
-        foreach ($textTags as $text) {
-            $tagsId[] = Tag::where('tag_text', $text)->get()->value('id');
-        }
-        $tags = Tag::find($tagsId);
+        $tags = Tag::whereIn('tag_text', explode(',', $request->tags))->get();
         $post->tags()->attach($tags);
 
-        return response()->json($post);
+        return response()->json($post, 201);
     }
 
     /**
@@ -82,11 +74,7 @@ class PostController extends Controller
     public function show($id)
     {
 
-        $posts = Post::where('user_id', $id)->get();
-        foreach ($posts as $post) {
-            $post['tags'] = $post->tags;
-            $post->user;
-        };
+        $posts = Post::where('user_id', $id)->with('tags')->with('user')->get();
         return response()->json($posts);
     }
 
