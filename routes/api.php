@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('posts', [PostController::class, 'index']);
-Route::resource('users', UserController::class);
+Route::resource('posts', PostController::class)->middleware('auth:api');
+Route::resource('users', UserController::class)->middleware('auth:api');
+
 
 // === Auth ===
 Route::post('registration', [AuthController::class, 'registration']);

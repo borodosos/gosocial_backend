@@ -23,7 +23,7 @@ class AuthController extends Controller
         }
 
         if (User::where('email', $request->email)->exists()) {
-            return response()->json(['error' => 'This user is already registered']);
+            return response()->json(['error' => 'This user is already registered'], 401);
         };
 
         User::firstOrCreate([
@@ -51,27 +51,28 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+
             $req = Request::create('/oauth/token', 'POST', [
                 'grant_type' => 'password',
                 'client_id' => config('passport.password_grant_client.id'),
                 'client_secret' => config('passport.password_grant_client.secret'),
                 'username' => request('email'),
                 'password' => request('password'),
-                'scope' => ''
+                'scope' => '',
             ]);
 
-            $res = app()->handle($req);
-            $responseBody = json_decode($res->getContent());
 
-
+            $res =  app()->handle($req);
+            $responseBody =  json_decode($res->getContent());
             return response()->json($responseBody, $res->getStatusCode());
         } else {
-            return response()->json(['error' => 'Incorrect password or email'], 401);
+            return response()->json(['error' => 'Incorrect password or email'], 400);
         }
     }
 
     public function refresh()
     {
+
         $req = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'refresh_token',
             'refresh_token' => request('refreshToken'),

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -15,7 +18,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+
+        $posts = Post::with('tags')->with('user')->get();
         return response()->json($posts);
     }
 
@@ -26,8 +30,6 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
-        return response()->json('create');
     }
 
     /**
@@ -38,8 +40,29 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        return response()->json('store');
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'text' => 'required',
+            'image' => 'required',
+            'tags' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->getMessageBag(), 400);;
+        }
+
+        $user = Auth::guard('api')->user();
+
+        $post = Post::create([
+            'title' => $request->title,
+            'text' => $request->text,
+            'image' => $request->image,
+            'user_id' => $user->id
+        ]);
+
+        $tags = Tag::whereIn('tag_text', explode(',', $request->tags))->get();
+        $post->tags()->attach($tags);
+
+        return response()->json($post, 201);
     }
 
     /**
@@ -50,8 +73,9 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
-        return response()->json('show');
+
+        $posts = Post::where('user_id', $id)->with('tags')->with('user')->get();
+        return response()->json($posts);
     }
 
     /**
