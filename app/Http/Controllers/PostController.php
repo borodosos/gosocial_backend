@@ -50,27 +50,28 @@ class PostController extends Controller
             return response()->json($validator->getMessageBag(), 400);;
         }
 
-        if ($request->hasFile('image')) {
-            $filenameWithExt = $request->file('image')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $fileNameToStore = "image/" . $filename . "_" . time() . "." . $extension;
-            $request->file('image')->storeAs('public', $fileNameToStore);
+        // if ($request->hasFile('image')) {
+        //     $filenameWithExt = $request->file('image')->getClientOriginalName();
+        //     $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+        //     $extension = $request->file('image')->getClientOriginalExtension();
+        //     $fileNameToStore = "image/" . $filename . "_" . time() . "." . $extension;
+        //     $request->file('image')->storeAs('public', $fileNameToStore);
 
-            $pathToFile = "storage/" . $fileNameToStore;
-        }
+        //     $pathToFile = "storage/" . $fileNameToStore;
+        // }
 
         $user = Auth::guard('api')->user();
 
         $post = Post::create([
             'title' => $request->title,
             'text' => $request->text,
-            'image' =>  $pathToFile,
+            'image' =>   $request->image,
             'user_id' => $user->id
         ]);
 
         $tags = Tag::whereIn('tag_text', explode(',', $request->tags))->get();
         $post->tags()->attach($tags);
+        $post['tags'] = $post->tags()->get();
 
         return response()->json($post, 201);
     }
