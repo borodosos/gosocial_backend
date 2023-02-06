@@ -50,12 +50,22 @@ class PostController extends Controller
             return response()->json($validator->getMessageBag(), 400);;
         }
 
+        if ($request->hasFile('image')) {
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileNameToStore = "image/" . $filename . "_" . time() . "." . $extension;
+            $request->file('image')->storeAs('public', $fileNameToStore);
+
+            $pathToFile = "storage/" . $fileNameToStore;
+        }
+
         $user = Auth::guard('api')->user();
 
         $post = Post::create([
             'title' => $request->title,
             'text' => $request->text,
-            'image' => $request->image,
+            'image' =>   $pathToFile,
             'user_id' => $user->id
         ]);
 
