@@ -16,6 +16,19 @@ trait HasFile
 
             $pathToFile = "storage/" . $fileNameToStore;
             return $pathToFile;
+        }
+        // } else {
+        //     return response()->json(['error' => 'Empty file']);
+        // }
+        if ($request->hasFile('image_profile')) {
+            $filenameWithExt = $request->file('image_profile')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image_profile')->getClientOriginalExtension();
+            $fileNameToStore = "image_profile/" . $filename . "_" . time() . "." . $extension;
+            $request->file('image_profile')->storeAs('public', $fileNameToStore);
+
+            $pathToFile = "storage/" . $fileNameToStore;
+            return $pathToFile;
         } else {
             return response()->json(['error' => 'Empty file']);
         }
