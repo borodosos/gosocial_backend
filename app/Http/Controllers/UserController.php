@@ -10,6 +10,9 @@ use App\Traits\HasFile;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+use function PHPUnit\Framework\isNull;
 
 class UserController extends Controller
 {
@@ -40,12 +43,15 @@ class UserController extends Controller
         $authUser = Auth::guard('api')->user();
         $keys = $request->keys();
 
-        // $pathToFile = $this->hasFile($request);
-        // $updated = User::where('id', $authUser->id)->update(["$keys[0]" => $request[$keys[0]]]);
-        $path = $request->file('file')->getRealPath();
-        $logo = file_get_contents($path);
-        $base64 = base64_encode($logo);
+        $pathToFile = $this->hasFile($request);
+        if (!is_null($pathToFile)) {
+            User::where('id', $authUser->id)->update(["image_profile" => $pathToFile]);
+        } else if (!is_null($request->password)) {
+            User::where('id', $authUser->id)->update(["password" => bcrypt($request->password)]);
+        } else {
+            User::where('id', $authUser->id)->update(["$keys[0]" => $request[$keys[0]]]);
+        }
 
-        return response($base64);
+        return response()->json('Success', 200);
     }
 }
