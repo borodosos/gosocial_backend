@@ -5,24 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
-use App\Traits\HasFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPSTORM_META\type;
+
 class PostController extends Controller
 {
-    use HasFile;
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        $posts = Post::with('tags')->with('user')->get();
+        if ($request->keywords) {
+            return response()->json($request);
+            // $posts = Post::where('title', 'LIKE', "%$request->keywords%")->with('tags')->with('user')->latest()->paginate(3);
+            // return response()->json($posts);
+        }
+
+        $posts = Post::with('tags')->with('user')->latest()->paginate(3);
+
         return response()->json($posts);
     }
 
@@ -53,7 +59,15 @@ class PostController extends Controller
             return response()->json($validator->getMessageBag(), 400);;
         }
 
-        $pathToFile = $this->hasFile($request);
+        if ($request->hasFile('image')) {
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileNameToStore = "image/" . $filename . "_" . time() . "." . $extension;
+            $request->file('image')->storeAs('public', $fileNameToStore);
+
+            $pathToFile = "storage/" . $fileNameToStore;
+        }
 
         $user = Auth::guard('api')->user();
 
@@ -78,7 +92,6 @@ class PostController extends Controller
      */
     public function show($id)
     {
-
         $posts = Post::where('user_id', $id)->with('tags')->with('user')->get();
         return response()->json($posts);
     }
