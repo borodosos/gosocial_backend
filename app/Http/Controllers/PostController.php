@@ -20,11 +20,13 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-
         if ($request->keywords) {
-            return response()->json($request);
-            // $posts = Post::where('title', 'LIKE', "%$request->keywords%")->with('tags')->with('user')->latest()->paginate(3);
-            // return response()->json($posts);
+            $posts = Post::where('title', 'LIKE', "%$request->keywords%")
+                ->orWhere('text', 'LIKE', "%$request->keywords%")
+                ->orWhereHas('tags', function ($query) use ($request) {
+                    $query->where('tag_text', 'LIKE', "%$request->keywords%");
+                })->with('tags')->with('user')->latest()->paginate(3);
+            return response()->json($posts);
         }
 
         $posts = Post::with('tags')->with('user')->latest()->paginate(3);
