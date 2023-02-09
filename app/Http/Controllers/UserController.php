@@ -41,17 +41,19 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $authUser = Auth::guard('api')->user();
-        $keys = $request->keys();
+        $updateData = $request->except('_method');
 
-        $pathToFile = $this->hasFile($request);
-        if (!is_null($pathToFile)) {
-            User::where('id', $authUser->id)->update(["image_profile" => $pathToFile]);
-        } else if (!is_null($request->password)) {
-            User::where('id', $authUser->id)->update(["password" => bcrypt($request->password)]);
-        } else {
-            User::where('id', $authUser->id)->update(["$keys[0]" => $request[$keys[0]]]);
+        if ($request->hasFile('image_profile')) {
+            $pathToFile = $this->hasFile($request);
+            $updateData["image_profile"] = $pathToFile;
+            unset($updateData["image_type"]);
+        }
+        if ($request->filled('password')) {
+            $updateData["password"] = bcrypt($updateData["password"]);
         }
 
-        return response()->json('Success', 200);
+        User::where('id', $authUser->id)->update($updateData);
+
+        return response()->json("Success", 200);
     }
 }
