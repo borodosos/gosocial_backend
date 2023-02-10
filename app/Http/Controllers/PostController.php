@@ -21,12 +21,34 @@ class PostController extends Controller
     public function index(Request $request)
     {
         if ($request->keywords) {
-            $posts = Post::where('title', 'LIKE', "%$request->keywords%")
-                ->orWhere('text', 'LIKE', "%$request->keywords%")
-                ->orWhereHas('tags', function ($query) use ($request) {
-                    $query->where('tag_text', 'LIKE', "%$request->keywords%");
-                })->with('tags')->with('user')->latest()->paginate(3);
-            return response()->json($posts);
+            switch ($request->selectedFilter) {
+                case 'Authors':
+                    $posts = Post::whereHas('user', function ($query) use ($request) {
+                        $query->where('first_name', 'LIKE', "%$request->keywords%")
+                            ->orWhere('second_name', 'LIKE', "%$request->keywords%");
+                    })->with('tags')->with('user')->latest()->paginate(3);
+                    break;
+
+                case 'Tags':
+                    $posts = Post::whereHas('tags', function ($query) use ($request) {
+                        $query->where('tag_text', 'LIKE', "%$request->keywords%");
+                    })->with('tags')->with('user')->latest()->paginate(3);
+                    break;
+
+                default:
+                    $posts = Post::where('title', 'LIKE', "%$request->keywords%")
+                        ->orWhere('text', 'LIKE', "%$request->keywords%")
+                        ->orWhereHas('tags', function ($query) use ($request) {
+                            $query->where('tag_text', 'LIKE', "%$request->keywords%");
+                        })
+                        ->orWhereHas('user', function ($query) use ($request) {
+                            $query->where('first_name', 'LIKE', "%$request->keywords%")
+                                ->orWhere('second_name', 'LIKE', "%$request->keywords%");
+                        })
+                        ->with('tags')->with('user')->latest()->paginate(3);
+                    break;
+            }
+            return response()->json(['posts' => $posts, 'keywords' => $request->keywords, 'filter' => $request->selectedFilter]);
         }
 
         $posts = Post::with('tags')->with('user')->latest()->paginate(3);
