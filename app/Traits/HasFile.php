@@ -17,6 +17,7 @@ trait HasFile
             $request->file('image')->storeAs('public', $fileNameToStore);
 
             $pathToFile = "storage/" . $fileNameToStore;
+
             return $pathToFile;
         } else if ($request->hasFile('image_profile')) {
             $path = $request->file('image_profile')->getRealPath();

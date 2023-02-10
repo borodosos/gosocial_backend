@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
-use App\Models\User;
+use App\Traits\HasFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +13,8 @@ use function PHPSTORM_META\type;
 
 class PostController extends Controller
 {
+
+    use HasFile;
     /**
      * Display a listing of the resource.
      *
@@ -83,15 +85,7 @@ class PostController extends Controller
             return response()->json($validator->getMessageBag(), 400);;
         }
 
-        if ($request->hasFile('image')) {
-            $filenameWithExt = $request->file('image')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $fileNameToStore = "image/" . $filename . "_" . time() . "." . $extension;
-            $request->file('image')->storeAs('public', $fileNameToStore);
-
-            $pathToFile = "storage/" . $fileNameToStore;
-        }
+        $pathToFile = $this->hasFile($request);
 
         $user = Auth::guard('api')->user();
 
