@@ -46,6 +46,6 @@ class GoogleController extends Controller
         $res =  app()->handle($req);
         $responseBody =  json_decode($res->getContent());
 
-        return redirect("http://localhost:8080/")->withCookie('refreshToken', $responseBody->refresh_token);
+        return redirect(env('VUE_APP_URL'))->withCookie('refreshToken', $responseBody->refresh_token);
     }
 }
