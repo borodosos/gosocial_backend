@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -24,4 +25,5 @@ Route::resource('users', UserController::class)->middleware('auth:api');
 // === Auth ===
 Route::post('registration', [AuthController::class, 'registration']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('refresh', [AuthController::class, 'refresh']);
+Route::get('refresh', [AuthController::class, 'refresh']);
+Route::get('google/login', [GoogleController::class, 'redirectToGoogle']);

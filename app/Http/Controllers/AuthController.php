@@ -45,7 +45,7 @@ class AuthController extends Controller
         $res = app()->handle($req);
         $responseBody = json_decode($res->getContent());
 
-        return response()->json($responseBody, $res->getStatusCode());
+        return response()->json($responseBody, $res->getStatusCode())->withCookie('refreshToken', $responseBody->refresh_token);
     }
 
     public function login()
@@ -64,7 +64,7 @@ class AuthController extends Controller
 
             $res =  app()->handle($req);
             $responseBody =  json_decode($res->getContent());
-            return response()->json($responseBody, $res->getStatusCode());
+            return response()->json($responseBody, $res->getStatusCode())->withCookie('refreshToken', $responseBody->refresh_token);
         } else {
             return response()->json(['error' => 'Incorrect password or email'], 400);
         }
@@ -72,10 +72,9 @@ class AuthController extends Controller
 
     public function refresh()
     {
-
         $req = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'refresh_token',
-            'refresh_token' => request('refreshToken'),
+            'refresh_token' => request()->cookie('refreshToken'),
             'client_id' => config('passport.password_grant_client.id'),
             'client_secret' => config('passport.password_grant_client.secret'),
             'scope' => ''
@@ -84,7 +83,6 @@ class AuthController extends Controller
         $res = app()->handle($req);
         $responseBody = json_decode($res->getContent());
 
-
-        return response()->json($responseBody, $res->getStatusCode());
+        return response()->json($responseBody, $res->getStatusCode())->withCookie('refreshToken', $responseBody->refresh_token);
     }
 }
