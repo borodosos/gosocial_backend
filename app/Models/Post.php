@@ -16,6 +16,16 @@ class Post extends Model
         'user_id'
     ];
 
+
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::addGlobalScope('comments', function ($builder) {
+    //         $builder->with('comments');
+    //     });
+    // }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -24,5 +34,10 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'comment');
     }
 }

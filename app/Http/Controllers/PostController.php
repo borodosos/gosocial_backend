@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Traits\HasFile;
@@ -47,14 +48,13 @@ class PostController extends Controller
                             $query->where('first_name', 'LIKE', "%$request->keywords%")
                                 ->orWhere('second_name', 'LIKE', "%$request->keywords%");
                         })
-                        ->with('tags')->with('user')->latest()->paginate(3);
+                        ->with('tags')->with('user')->with('comments')->latest()->paginate(3);
                     break;
             }
             return response()->json(['posts' => $posts, 'keywords' => $request->keywords, 'filter' => $request->selectedFilter]);
         }
 
-        $posts = Post::with('tags')->with('user')->latest()->paginate(3);
-
+        $posts = Post::with('tags')->with('user')->with('comments')->latest()->paginate(3);
         return response()->json($posts);
     }
 
@@ -110,7 +110,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $posts = Post::where('user_id', $id)->with('tags')->with('user')->get();
+        $posts = Post::where('id', $id)->with('tags')->with('user')->get();
         return response()->json($posts);
     }
 
@@ -135,8 +135,8 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        return response()->json('update');
+        $request->except('_method');
+        return response()->json($request->comment);
     }
 
     /**
