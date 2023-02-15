@@ -16,16 +16,6 @@ class Post extends Model
         'user_id'
     ];
 
-
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::addGlobalScope('comments', function ($builder) {
-    //         $builder->with('comments');
-    //     });
-    // }
-
     public function user()
     {
         return $this->belongsTo(User::class);

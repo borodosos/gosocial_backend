@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('users', UserController::class)->middleware('auth:api');
 Route::resource('posts', PostController::class)->middleware('auth:api');
-Route::resource('posts.comments', CommentController::class)->middleware('auth:api');
+Route::resource('posts.comments', CommentController::class)->shallow()->middleware('auth:api');
 
 
 

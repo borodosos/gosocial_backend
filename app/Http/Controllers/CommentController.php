@@ -49,7 +49,7 @@ class CommentController extends Controller
 
             $comment->replies()->save($reply);
         } else {
-            return response()->json(['error' => 'Something went wrong...', 400]);
+            return response()->json(['error' => 'Something went wrong...'], 400);
         }
 
         return response()->json('Success', 200);
@@ -63,7 +63,8 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        return response()->json('show');
+        $comment = Comment::find(1);
+        return response()->json($comment);
     }
 
     /**
@@ -86,7 +87,16 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json();
+
+        if ($request->commentContent) {
+            Comment::where('id', $id)->update(['text' => $request->comment]);
+        } else if ($request->replyContent) {
+            Comment::where('id', $id)->update(['text' => $request->reply]);
+        } else {
+            return response()->json(['error' => 'Something went wrong...'], 400);
+        }
+
+        return response()->json('Success', 200);
     }
 
     /**
@@ -97,6 +107,15 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json();
+        $comment = Comment::find($id);
+
+        if ($comment->replies->isEmpty()) {
+            $comment->delete();
+            return response()->json('Success deleting comment', 200);
+        } else {
+            $comment->replies()->delete();
+            $comment->delete();
+            return response()->json('Success deleting comment with replies', 200);
+        }
     }
 }
