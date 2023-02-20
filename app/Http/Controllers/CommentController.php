@@ -89,9 +89,9 @@ class CommentController extends Controller
     {
 
         if ($request->commentContent) {
-            Comment::where('id', $id)->update(['text' => $request->comment]);
+            Comment::where('id', $id)->update(['text' => $request->commentContent]);
         } else if ($request->replyContent) {
-            Comment::where('id', $id)->update(['text' => $request->reply]);
+            Comment::where('id', $id)->update(['text' => $request->replyContent]);
         } else {
             return response()->json(['error' => 'Something went wrong...'], 400);
         }
