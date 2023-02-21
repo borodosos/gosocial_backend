@@ -135,8 +135,7 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->except('_method');
-        return response()->json($request->comment);
+        //
     }
 
     /**

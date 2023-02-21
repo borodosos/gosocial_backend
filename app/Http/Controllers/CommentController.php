@@ -9,25 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        // $comments = Post::find()
-        return response()->json('index');
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index($id)
     {
-        return response()->json();
+
+        return response()->json('index');
     }
 
     /**
@@ -38,6 +24,12 @@ class CommentController extends Controller
      */
     public function store(Request $request, $id)
     {
+        $request->validate([
+            'comment' => 'required_without:reply|string',
+            'reply' => 'required_without:comment|string',
+            'commentId' => 'required_if:reply,!=,null|exists:comments,id',
+        ]);
+
         $user = Auth::user();
         if ($request->comment) {
             $post = Post::find($id);
@@ -53,29 +45,6 @@ class CommentController extends Controller
         }
 
         return response()->json('Success', 200);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $comment = Comment::find(1);
-        return response()->json($comment);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        return response()->json();
     }
 
     /**
@@ -107,15 +76,20 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
+        $auth_user = Auth::guard('api')->user();
         $comment = Comment::find($id);
 
-        if ($comment->replies->isEmpty()) {
-            $comment->delete();
-            return response()->json('Success deleting comment', 200);
+        if ($auth_user->id == $comment->user_id) {
+            if ($comment->replies->isEmpty()) {
+                $comment->delete();
+                return response()->json('Success deleting comment', 200);
+            } else {
+                $comment->replies()->delete();
+                $comment->delete();
+                return response()->json('Success deleting comment with replies', 200);
+            }
         } else {
-            $comment->replies()->delete();
-            $comment->delete();
-            return response()->json('Success deleting comment with replies', 200);
+            return response()->json(['error' => 'Something went wrong...'], 500);
         }
     }
 }
