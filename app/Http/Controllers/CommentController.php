@@ -9,13 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-
-    public function index($id)
-    {
-
-        return response()->json('index');
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -76,18 +69,13 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
+
         $auth_user = Auth::guard('api')->user();
         $comment = Comment::find($id);
 
         if ($auth_user->id == $comment->user_id) {
-            if ($comment->replies->isEmpty()) {
-                $comment->delete();
-                return response()->json('Success deleting comment', 200);
-            } else {
-                $comment->replies()->delete();
-                $comment->delete();
-                return response()->json('Success deleting comment with replies', 200);
-            }
+            $comment->delete();
+            return response()->json('Success deleting', 200);
         } else {
             return response()->json(['error' => 'Something went wrong...'], 500);
         }

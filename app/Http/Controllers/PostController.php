@@ -16,6 +16,7 @@ class PostController extends Controller
 {
 
     use HasFile;
+
     /**
      * Display a listing of the resource.
      *
@@ -56,15 +57,6 @@ class PostController extends Controller
 
         $posts = Post::with('tags')->with('user')->with('comments')->latest()->paginate(3);
         return response()->json($posts);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
     }
 
     /**
@@ -112,18 +104,6 @@ class PostController extends Controller
     {
         $posts = Post::where('id', $id)->with('tags')->with('user')->get();
         return response()->json($posts);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-        return response()->json('edit');
     }
 
     /**

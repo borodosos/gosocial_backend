@@ -22,6 +22,12 @@ class Comment extends Model
         static::addGlobalScope('user', function ($builder) {
             $builder->with('user');
         });
+
+        static::deleting(function ($item) {
+            if (!$item->replies->isEmpty()) {
+                $item->replies()->delete();
+            }
+        });
     }
 
     public function user()
@@ -36,6 +42,6 @@ class Comment extends Model
 
     public function replies()
     {
-        return $this->morphMany(Comment::class, 'comment');
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }
