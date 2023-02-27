@@ -16,6 +16,21 @@ class Post extends Model
         'user_id'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($item) {
+            if (!$item->comments->isEmpty()) {
+                $comments = $item->comments;
+                foreach ($comments as $comment) {
+                    $comment->delete();
+                }
+            }
+            $item->tags()->detach();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

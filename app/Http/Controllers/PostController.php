@@ -126,7 +126,14 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
-        return response()->json('destroy');
+        $auth_user = Auth::guard('api')->user();
+        $post = Post::find($id);
+
+        if ($auth_user->role == 'moderator' || $auth_user->id == $post->user_id) {
+            $post->delete();
+            return response()->json('Success deleting post');
+        } else {
+            return response()->json(['error' => 'Something went wrong...', 500]);
+        }
     }
 }
