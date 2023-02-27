@@ -21,7 +21,6 @@ class Post extends Model
         parent::boot();
 
         static::deleting(function ($item) {
-            print('post delete');
             if (!$item->comments->isEmpty()) {
                 $comments = $item->comments;
                 foreach ($comments as $comment) {
