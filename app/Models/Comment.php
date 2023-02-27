@@ -24,6 +24,7 @@ class Comment extends Model
         });
 
         static::deleting(function ($item) {
+            print('deleting');
             if (!$item->replies->isEmpty()) {
                 $item->replies()->delete();
             }
