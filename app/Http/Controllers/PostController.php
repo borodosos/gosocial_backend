@@ -115,7 +115,25 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $auth_user = Auth::guard('api')->user();
+        $post = Post::find($id);
+
+        $updateData = $request->except('_method');
+
+        if ($auth_user->id == $post->user_id) {
+            if ($request->hasFile('image')) {
+                $pathToFile = $this->hasFile($request);
+                $updateData["image"] = $pathToFile;
+            }
+            $post->update($updateData);
+            if ($request->tags) {
+                $tags = Tag::whereIn('tag_text', explode(',', $request->tags))->get();
+                $post->tags()->sync($tags);
+            }
+            return response()->json('Success updating post', 200);
+        } else {
+            return response()->json('Something went wrong...', 400);
+        }
     }
 
     /**
