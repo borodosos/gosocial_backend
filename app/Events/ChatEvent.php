@@ -9,8 +9,9 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class PlaygroundEvent implements ShouldBroadcast
+class ChatEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -31,12 +32,12 @@ class PlaygroundEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('public.playground.1');
+        return new PrivateChannel('private.chat.1');
     }
 
     public function broadcastAs()
     {
-        return 'playground.1';
+        return 'chat-message';
     }
 
 

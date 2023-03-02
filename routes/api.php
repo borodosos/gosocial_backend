@@ -1,6 +1,6 @@
 <?php
 
-use App\Events\PlaygroundEvent;
+use App\Events\ChatEvent;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GoogleController;
@@ -26,7 +26,7 @@ Route::resource('posts', PostController::class)->middleware('auth:api');
 Route::resource('posts.comments', CommentController::class)->shallow()->middleware('auth:api');
 
 Route::get('playground', function () {
-    event(new PlaygroundEvent());
+    event(new ChatEvent());
     return response()->json('aboba');
 });
 
