@@ -20,6 +20,5 @@ use Illuminate\Support\Facades\Broadcast;
 // });
 
 Broadcast::channel('private.chat.{id}', function ($user, $id) {
-    // $auth_user = Auth::guard('api')->user();
-    return true;
+    return Auth::guard('api')->user();
 });
