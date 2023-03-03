@@ -16,16 +16,18 @@ class NewChatMessage implements ShouldBroadcast
 
     public $message;
     public $user;
+    public $to_user_id;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($message, $user)
+    public function __construct($message, $to_user_id, $user)
     {
         $this->message = $message;
         $this->user = $user;
+        $this->to_user_id = $to_user_id;
     }
 
     /**
@@ -35,7 +37,7 @@ class NewChatMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('private.chat.1');
+        return new PrivateChannel('user.chat.' . $this->to_user_id);
     }
 
     public function broadcastAs()
@@ -45,6 +47,6 @@ class NewChatMessage implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return ['message' => $this->message];
+        return ['message' => $this->message, 'user' => $this->user];
     }
 }

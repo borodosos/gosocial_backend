@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(Comment::class, 'comment');
     }
+
+    // public function messages()
+    // {
+    //     return $this->hasMany(ChatMessage::class);
+    // }
 }

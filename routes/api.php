@@ -27,12 +27,8 @@ Route::resource('users', UserController::class)->middleware('auth:api');
 Route::resource('posts', PostController::class)->middleware('auth:api');
 Route::resource('posts.comments', CommentController::class)->shallow()->middleware('auth:api');
 
-// Route::get('playground', function () {
-//     event(new ChatEvent());
-//     return response()->json('aboba');
-// });
 
-Route::resource('message', MessageController::class);
+Route::resource('message', MessageController::class)->middleware('auth:api');
 
 
 
