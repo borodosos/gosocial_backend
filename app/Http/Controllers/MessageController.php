@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewChatMessage;
+use App\Events\SessionEvent;
 use App\Models\ChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +26,8 @@ class MessageController extends Controller
         // ]);
 
 
-
-        event(new NewChatMessage($request->message, $request->to_user, $user));
+        event(new SessionEvent($request->message, $request->to_user, $user));
+        // event(new NewChatMessage($request->message, $request->to_user, $user));
 
         return response()->json([], 200);
     }
