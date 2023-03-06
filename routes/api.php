@@ -7,8 +7,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,11 +27,8 @@ Route::resource('users', UserController::class)->middleware('auth:api');
 Route::resource('posts', PostController::class)->middleware('auth:api');
 Route::resource('posts.comments', CommentController::class)->shallow()->middleware('auth:api');
 
-
 Route::resource('message', MessageController::class)->middleware('auth:api');
-
-
-
+Route::resource('sessions', SessionController::class)->middleware('auth:api');
 
 // === Auth ===
 Route::post('registration', [AuthController::class, 'registration']);

@@ -26,8 +26,10 @@ class MessageController extends Controller
         // ]);
 
 
-        event(new SessionEvent($request->message, $request->to_user, $user));
+        // event(new SessionEvent($request->message, $request->to_user, $user));
         // event(new NewChatMessage($request->message, $request->to_user, $user));
+        // event(new NewChatMessage($request->message, $request->session_id));
+        event(new SessionEvent($request->message, $request->session_id));
 
         return response()->json([], 200);
     }

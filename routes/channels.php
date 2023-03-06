@@ -19,10 +19,6 @@ use Illuminate\Support\Facades\Broadcast;
 //     return (int) $user->id === (int) $id;
 // });
 
-Broadcast::channel('chat', function ($user) {
-    return Auth::guard('api')->user();
-});
-
-Broadcast::channel('user.chat.{id}', function ($user, $id) {
+Broadcast::channel('session.{session_id}', function ($user, $session_id) {
     return Auth::guard('api')->user();
 });
