@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Room;
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class SessionController extends Controller
+class RoomController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -40,20 +41,27 @@ class SessionController extends Controller
         $auth_user = Auth::guard('api')->user();
         $user_to = User::find($request->friend_id);
 
-        // $user_sessions = $auth_user->sessions->whereHas('session_user', function ($query) {
-        //     $query->where('user_id', 1);
-        // })->get();
 
-        $user_sessions = Session::find(14);
+        $founded_user = User::whereHas('rooms', function ($query) use ($auth_user, $user_to) {
+            $query->where([['user_id', $auth_user->id], ['user_to_id', $user_to->id]])
+                ->orWhere([['user_id', $user_to->id], ['user_to_id', $auth_user->id]]);
+        })->get();
 
-        // if ($auth_user->sessions->isEmpty() || $user_to->sessions->isEmpty()) {
-        //     $session = Session::firstOrCreate(['session_name' => 'Session ' . $auth_user->second_name . '-' . $user_to->second_name]);
-        //     $auth_user->sessions()->syncWithoutDetaching($session->id);
-        //     $user_to->sessions()->syncWithoutDetaching($session->id);
-        // }
+        if ($founded_user->isEmpty()) {
+            $room = Room::firstOrCreate(['room_name' => 'Room ' . $auth_user->second_name . '-' . $user_to->second_name]);
+            $auth_user->rooms()->attach($room->id, ['user_to_id' => $user_to->id]);
 
-        // return response()->json(['session_data' => $auth_user->sessions[0]], 200);
-        return response()->json($user_sessions);
+            $room_data = $auth_user->rooms()
+                ->where([['user_id', $auth_user->id], ['user_to_id', $user_to->id]])
+                ->orWhere([['user_id', $user_to->id], ['user_to_id', $auth_user->id]])->get();
+
+            return response()->json(['message' => 'Room created', 'room_data' => $room_data[0]], 200);
+        } else {
+            $room_data = $founded_user[0]->rooms()
+                ->where([['user_id', $auth_user->id], ['user_to_id', $user_to->id]])
+                ->orWhere([['user_id', $user_to->id], ['user_to_id', $auth_user->id]])->get();
+            return response()->json($room_data[0], 200);
+        }
     }
 
     /**

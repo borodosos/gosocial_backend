@@ -13,10 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('room_user', function (Blueprint $table) {
             $table->id();
-            $table->text('content');
-            $table->unsignedBigInteger('session_id');
+            $table->unsignedBigInteger('room_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_to_id');
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('room_id')->references('id')->on('rooms');
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('room_users');
     }
 };

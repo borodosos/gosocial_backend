@@ -60,8 +60,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Session::class);
     }
 
-    // public function messages()
-    // {
-    //     return $this->hasMany(ChatMessage::class);
-    // }
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

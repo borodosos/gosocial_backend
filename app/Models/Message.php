@@ -10,11 +10,28 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'content'
+        'content',
+        'user_id',
+        'room_id'
     ];
 
-    public function chat()
+    protected static function boot()
     {
-        return $this->belongsTo(Chat::class);
+        parent::boot();
+
+        static::addGlobalScope('user', function ($builder) {
+            $builder->with('user');
+        });
+    }
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
     }
 }

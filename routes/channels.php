@@ -19,6 +19,6 @@ use Illuminate\Support\Facades\Broadcast;
 //     return (int) $user->id === (int) $id;
 // });
 
-Broadcast::channel('session.{session_id}', function ($user, $session_id) {
+Broadcast::channel('room.{room_id}', function ($user, $room_id) {
     return Auth::guard('api')->user();
 });

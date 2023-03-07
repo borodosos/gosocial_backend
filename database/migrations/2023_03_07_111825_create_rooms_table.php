@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('session_user', function (Blueprint $table) {
+        Schema::create('rooms', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('session_id');
-            $table->unsignedBigInteger('user_id');
+            $table->string('room_name');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('session_user');
+        Schema::dropIfExists('rooms');
     }
 };
