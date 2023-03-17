@@ -17,8 +17,15 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
+        //     'first_name' => 'Test',
         //     'email' => 'test@example.com',
         // ]);
+
+        $tags = ['IT', 'Humor', 'Film', 'Sport'];
+        foreach ($tags as $tag) {
+            \App\Models\Tag::factory()->create([
+                'tag_text' => $tag,
+            ]);
+        }
     }
 }

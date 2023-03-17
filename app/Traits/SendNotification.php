@@ -10,7 +10,7 @@ trait SendNotification
     public function sendNotification($id)
     {
         $user = User::find($id);
-        $notification = new RealTimeNotification('Hi!');
+        $notification = new RealTimeNotification('Message from ' . $user->first_name . ' ' . $user->second_name);
 
         $user->notify($notification);
     }
