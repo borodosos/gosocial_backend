@@ -5,10 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public $client;
+
+    public function __construct()
+    {
+        $this->client = DB::table('oauth_clients')
+            ->where('id', 2)
+            ->first();
+    }
+
     public function registration(Request $request)
     {
 
@@ -35,8 +45,8 @@ class AuthController extends Controller
 
         $req = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'password',
-            'client_id' => config('passport.password_grant_client.id'),
-            'client_secret' => config('passport.password_grant_client.secret'),
+            'client_id' => $this->client->id,
+            'client_secret' => $this->client->secret,
             'username' => request('email'),
             'password' => request('password'),
             'scope' => ''
@@ -51,11 +61,10 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-
             $req = Request::create('/oauth/token', 'POST', [
                 'grant_type' => 'password',
-                'client_id' => config('passport.password_grant_client.id'),
-                'client_secret' => config('passport.password_grant_client.secret'),
+                'client_id' => $this->client->id,
+                'client_secret' => $this->client->secret,
                 'username' => request('email'),
                 'password' => request('password'),
                 'scope' => '',
@@ -75,8 +84,8 @@ class AuthController extends Controller
         $req = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'refresh_token',
             'refresh_token' => request()->cookie('refreshToken'),
-            'client_id' => config('passport.password_grant_client.id'),
-            'client_secret' => config('passport.password_grant_client.secret'),
+            'client_id' => $this->client->id,
+            'client_secret' => $this->client->secret,
             'scope' => ''
         ]);
 

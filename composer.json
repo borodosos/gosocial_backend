@@ -55,7 +55,7 @@
             "@php artisan key:generate --ansi"
         ],
         "test": [
-            "vendor/bin/phpunit --coverage-html tests/coverage"
+            "vendor/bin/phpunit"
         ]
     },
     "extra": {
