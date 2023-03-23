@@ -3,10 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Log;
-use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -16,7 +12,7 @@ class LoginTest extends TestCase
      *
      * @return void
      */
-    public function test_a_user_can_login()
+    public function test_user_can_login_with_correct_credentials()
     {
         $user = User::all()->random();
 
@@ -25,15 +21,19 @@ class LoginTest extends TestCase
             'password' => '123456789',
         ];
 
-        $this->json('post', 'api/login', $data)->assertStatus(200)->assertJsonStructure([
+        $response = $this->json('post', 'api/login', $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
             'token_type',
             'expires_in',
             'access_token',
             'refresh_token',
         ]);
+        $response->assertCookie('refreshToken');
     }
 
-    public function test_a_user_can_register()
+    public function test_user_can_register_with_correct_credentials()
     {
         $data = [
             'firstName' => fake()->firstName(),
@@ -42,11 +42,38 @@ class LoginTest extends TestCase
             'password' => '123456789',
         ];
 
-        $this->json('post', 'api/registration', $data)->assertStatus(200)->assertJsonStructure([
+        $response = $this->json('post', 'api/registration', $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
             'token_type',
             'expires_in',
             'access_token',
             'refresh_token',
         ]);
+        $response->assertCookie('refreshToken');
+    }
+
+    public function test_user_cannot_login_with_incorrect_password()
+    {
+        $user = User::all()->random();
+
+        $data = [
+            'email' => $user->email,
+            'password' => 'invalid-password',
+        ];
+
+
+        $response = $this->json('post', 'api/login', $data);
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['error']);
+    }
+
+
+    public function test_user_can_login_with_google()
+    {
+        $response = $this->json('get', 'api/google/login');
+
+        $response->assertStatus(200);
     }
 }
