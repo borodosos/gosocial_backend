@@ -54,4 +54,19 @@ class User extends Authenticatable
     {
         return $this->morphMany(Comment::class, 'comment');
     }
+
+    public function sessions()
+    {
+        return $this->belongsToMany(Session::class);
+    }
+
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

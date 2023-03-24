@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -10,18 +9,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PlaygroundEvent implements ShouldBroadcast
+class RoomEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $message;
+    public $room_id;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($message, $room_id)
     {
-        //
+        $this->message = $message;
+        $this->room_id = $room_id;
     }
 
     /**
@@ -31,19 +34,16 @@ class PlaygroundEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('public.playground.1');
+        return new PresenceChannel('room.' . $this->room_id);
     }
 
     public function broadcastAs()
     {
-        return 'playground.1';
+        return 'room-message';
     }
-
 
     public function broadcastWith()
     {
-        return [
-            'value' => '132'
-        ];
+        return ['message' => $this->message];
     }
 }
