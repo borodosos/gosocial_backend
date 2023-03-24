@@ -75,5 +75,6 @@ class LoginTest extends TestCase
         $response = $this->json('get', 'api/google/login');
 
         $response->assertStatus(200);
+        $this->assertTrue(str_contains($response->original, "https://accounts.google.com"));
     }
 }
