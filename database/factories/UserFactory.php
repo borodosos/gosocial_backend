@@ -8,21 +8,19 @@ use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
-class UserFactory extends Factory
-{
+class UserFactory extends Factory {
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
-    public function definition()
-    {
+    public function definition() {
         return [
             'first_name' => fake()->firstName(),
             'second_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'image_profile' => fake()->image('public/storage/profiles', 640, 480, null, true),
+            'image_profile' => fake()->image(public_path('images'), 640, 480, null, true),
             'password' => bcrypt('123456789'), // password
             'remember_token' => Str::random(10),
         ];
@@ -33,9 +31,8 @@ class UserFactory extends Factory
      *
      * @return static
      */
-    public function unverified()
-    {
-        return $this->state(fn (array $attributes) => [
+    public function unverified() {
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
